@@ -62,6 +62,7 @@ Agruments:
 
 *ot account set-default 	# ERROR: Missing required variable
 *ot account set-default <account> 	# set default account
+*ot accounu show [account]
 
 *ot account new			# ERROR: Missing required variable | proposition: make new account with interactive UI
 *ot account new <nym-my>			# ERROR: Missing required variable
@@ -183,6 +184,7 @@ ot market ls
 ------------------------------
 
 ot mint new
+*ot msg ls [nym] 
 
 ------------------------------
 
@@ -221,8 +223,8 @@ ot msg rm-out nymName> <index> # proposition for command removing msg from mail 
 
 *ot nym rm <nym> # remove <nym> if wasn't registered oon server TODO: It is possible to remove registered nym?
 
-*ot nym info <nym> # show information about such <nym>
-*ot nym info <nym> # show information about such <nym>
+*ot nym info # show information about default nym
+*ot nym info [nym] # show information about such [nym] 
 
 ot nym edit <nym>	# allows to edit information about <nym>
 
@@ -290,7 +292,8 @@ ot receipt?
 
 ------------------------------
 
-ot voucher new
+*ot voucher buy <nym-to> <amount> [acc-my] [--memo text]
+ot voucher new 
 
 ------------------------------
 

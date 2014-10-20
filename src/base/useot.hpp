@@ -214,6 +214,7 @@ namespace nUse {
 
 		EXEC bool PurseCreate(const string & serverName, const string & asset, const string & ownerName, const string & signerName, bool dryrun);
 		EXEC bool PurseDisplay(const string & serverName, const string & asset, const string & nymName, bool dryrun);
+
 		//================= server =================
 
 		void ServerCheck(); ///< Check server availability (ping server)
@@ -236,6 +237,10 @@ namespace nUse {
 		EXEC bool TextEncrypt(const string & recipientNymName, const string & plainText, bool dryrun);
 		EXEC bool TextDecode(const string & encodedText, bool dryrun);
 		EXEC bool TextDecrypt(const string & recipientNymName, const string & encryptedText, bool dryrun);
+
+		//================= voucher ==============
+
+		EXEC bool VoucherWithdraw(const string & recNymName, int64_t amount, const string & myAcc, string memo, bool dryrun);
 	};
 
 } // nUse

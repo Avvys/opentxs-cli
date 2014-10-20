@@ -406,8 +406,8 @@ void cCmdParser::Init() {
 	AddFormat("account ls", {}, {}, NullMap,
 		LAMBDA { auto &D=*d; return U.AccountDisplayAll( D.has("--dryrun") ); } );
 
-	AddFormat("account show", {pAccount}, {}, NullMap,
-		LAMBDA { auto &D=*d; return U.AccountDisplay( D.V(1), D.has("--dryrun") ); } );
+	AddFormat("account show", {}, {pAccount}, NullMap,
+		LAMBDA { auto &D=*d; return U.AccountDisplay( D.v(1, U.AccountGetName(U.AccountGetDefault()) ), D.has("--dryrun") ); } );
 
 	AddFormat("account rename", {pAccount, pAccountNewName}, {}, NullMap,
 		LAMBDA { auto &D=*d; return U.AccountRename(D.V(1), D.V(2), D.has("--dryrun") ); } );
@@ -533,8 +533,8 @@ void cCmdParser::Init() {
 	AddFormat("nym import", {}, {}, {{"--file",pReadFile}},
 		LAMBDA { auto &D=*d; return U.NymImport( D.o1("--file",""), D.has("--dryrun") ); } );
 
-	AddFormat("nym info", {pNym}, {}, NullMap,
-		LAMBDA { auto &D=*d; return U.NymDisplayInfo( D.V(1), D.has("--dryrun") ); } );
+	AddFormat("nym info", {}, {pNym}, NullMap,
+		LAMBDA { auto &D=*d; return U.NymDisplayInfo( D.v(1, U.NymGetName( U.NymGetDefault() )), D.has("--dryrun") ); } );
 
 	AddFormat("nym register", {pNym}, {pServer}, NullMap ,
 		LAMBDA { auto &D=*d; return U.NymRegister( D.V(1), D.v(2, U.ServerGetName(U.ServerGetDefault())), D.has("--dryrun") ); } );
@@ -615,6 +615,11 @@ void cCmdParser::Init() {
 
 	AddFormat("text decrypt", {pNymMy}, {pText}, NullMap,
 		LAMBDA { auto &D=*d; return U.TextDecrypt(D.V(1), D.v(2, ""), D.has("--dryrun") ); } );
+
+	//======== ot voucher ========
+
+	AddFormat("voucher new", {pNymTo, pAmount}, {pAccountMy}, { {"--memo",pText} },
+		LAMBDA { auto &D=*d; return U.VoucherWithdraw(D.V(1), stoi(D.V(2)), D.v(3, U.AccountGetName(U.AccountGetDefault())), D.o1("--memo", ""), D.has("--dryrun") ); } );
 
 	mI->BuildCache_CmdNames();
 }
