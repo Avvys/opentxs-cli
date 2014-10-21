@@ -203,6 +203,11 @@ namespace nUse {
 		EXEC bool NymRename(const string & oldNymName, const string & newNymName, bool dryrun);
 		EXEC bool NymSetDefault(const string & nymName, bool dryrun);
 
+		//================= nym-outpayments ==========
+
+		EXEC bool OutpaymentsDisplay(const string & nym, bool dryrun);
+		EXEC bool OutpaymentsShow(const string & nym, int32_t index, bool dryrun);
+
 		//================= payment ==================
 
 		EXEC bool PaymentShow(const string & nym, const string & server, bool dryrun); ///< show payments inbox
@@ -240,7 +245,9 @@ namespace nUse {
 
 		//================= voucher ==============
 
+		EXEC bool VoucherDeposit(const string & acc, bool dryrun);
 		EXEC bool VoucherWithdraw(const string & recNymName, int64_t amount, const string & myAcc, string memo, bool dryrun);
+
 	};
 
 } // nUse

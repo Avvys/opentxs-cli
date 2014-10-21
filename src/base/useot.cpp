@@ -1740,6 +1740,55 @@ bool cUseOT::NymSetDefault(const string & nymName, bool dryrun) {
 	nUtils::configManager.Save(mDefaultIDsFile, mDefaultIDs);
 	return true;
 }
+bool cUseOT::OutpaymentsDisplay(const string & nym, bool dryrun) {
+	_fact("nym-outpayment ls " << nym);
+	if (dryrun) return true;
+	if (!Init()) return false;
+
+	ID nymID = NymGetId(nym);
+
+	auto count = opentxs::OTAPI_Wrap::GetNym_OutpaymentsCount(nymID);
+	cout << zkr::cc::fore::lightblue << "Printing outpayments for nym: " << nym << " (" << count << ")" << zkr::cc::console << endl;
+
+	bprinter::TablePrinter table(&std::cout);
+	table.AddColumn("index", 5);
+	table.AddColumn("Recipient", 20);
+	table.AddColumn("Payment",30);
+
+	table.PrintHeader();
+	for (int32_t i = 0; i<count; i++) {
+		table << i << NymGetName(opentxs::OTAPI_Wrap::GetNym_OutpaymentsRecipientIDByIndex(nymID,i))
+				<< opentxs::OTAPI_Wrap::GetNym_OutpaymentsContentsByIndex(nymID,i);
+	}
+	table.PrintFooter();
+	cout << zkr::cc::console << endl;
+	return true;
+}
+bool cUseOT::OutpaymentsShow(const string & nym, int32_t index, bool dryrun) {
+	_fact("nym-outpayment show " << index << " " << nym);
+	if(dryrun) return true;
+	if(!Init()) return false;
+
+	ID nymID = NymGetId(nym);
+
+	auto payment = opentxs::OTAPI_Wrap::GetNym_OutpaymentsContentsByIndex(nymID, index);
+	auto srv = opentxs::OTAPI_Wrap::GetNym_OutpaymentsServerIDByIndex(nymID, index);
+	auto rec =  opentxs::OTAPI_Wrap::GetNym_OutpaymentsRecipientIDByIndex(nymID, index);
+
+	auto &col1 = zkr::cc::fore::lightblue;
+	auto &col2 = zkr::cc::fore::lightyellow;
+	auto &col3 = zkr::cc::fore::yellow;
+
+	cout << col1 << "     Index: " << col2 << index << endl;
+	cout << col1 << "       Nym: " << col2 << nym << col3 << " (" << nymID << ")"<< endl;
+	cout << col1 << "    Server: " << col2 << ServerGetName(srv) << col3 << " (" << srv << ")"<< endl;
+	cout << col1 << " Recipient: " << col2 << NymGetName(rec) << col3 << " (" << rec << ")"<< endl;
+	cout << endl;
+	cout << col1 << "Outpayment: " << endl;
+	cout << col2 << payment << zkr::cc::console << endl;
+
+	return true;
+}
 
 bool cUseOT::PaymentAccept(const string & account, const int64_t index, bool dryrun) {
 	//case ("CHEQUE")
@@ -2343,6 +2392,31 @@ bool cUseOT::TextDecrypt(const string & recipientNymName, const string & encrypt
 	return true;
 }
 
+bool cUseOT::VoucherDeposit(const string & acc, bool dryrun) {
+	_fact("voucher deposit " << " " << acc);
+	if(dryrun) return true;
+	if(!Init()) return false;
+
+	ID accID = AccountGetId(acc);
+	ID srvID = opentxs::OTAPI_Wrap::GetAccountWallet_ServerID(accID);
+	ID nymID = opentxs::OTAPI_Wrap::GetAccountWallet_NymID(accID);
+
+	string voucher ;
+
+	_dbg3("voucher is empty, starting text editor");
+	nUtils::cEnvUtils envUtils;
+	voucher = envUtils.Compose();
+
+	//auto voucher = opentxs::OTAPI_Wrap::Transaction_GetVoucher()
+
+	auto dep = opentxs::OTAPI_Wrap::depositCheque(srvID, nymID, accID, voucher);
+
+	cout << dep << endl;
+
+	return true;
+}
+
+
 bool cUseOT::VoucherWithdraw(const string & recNymName, int64_t amount, const string & myAcc, string memo, bool dryrun) {
 	_fact("voucher buy " << recNymName << " " << amount << " " << myAcc << " " << memo);
 	if(dryrun) return true;
@@ -2358,7 +2432,7 @@ bool cUseOT::VoucherWithdraw(const string & recNymName, int64_t amount, const st
 
 	// comfortable lambda function, reports errors, returns always false
 	auto err = [] (string var, string mess, string com)->bool {
-		_erro("" << mess << " [" << var << "]");
+		_erro( mess << " [" << var << "]");
 		cout << zkr::cc::fore::lightred << com << zkr::cc::fore::console << endl;
 		return false;
 	}; // end of lambda
@@ -2393,20 +2467,14 @@ bool cUseOT::VoucherWithdraw(const string & recNymName, int64_t amount, const st
 
 	auto voucher = opentxs::OTAPI_Wrap::Transaction_GetVoucher(srvID, myNymID, myAccID, transactionReply);
 	if(voucher == "") return err(voucher, "Error with getting voucher", "Server error");
-
+	cout << voucher << endl;
 	mMadeEasy->send_user_payment(srvID, myNymID, myNymID, voucher); // saving voucher in my outpayments
 	// after sending this voucher, it will be removed automatically
 
 	bool srvAcc = mMadeEasy->retrieve_account(srvID, myNymID, myAccID, false);
 	_dbg3("srvAcc retrv: " << srvAcc);
 	if(!srvAcc) return err(ToStr(srvAcc), "Retriving account failed! Used force download", "Retriving account failed!");
-	else cout << zkr::cc::fore::lightgreen << "Operation successfull" << zkr::cc::console << endl; // all ok
-
-	auto outPaymentMy = opentxs::OTAPI_Wrap::GetNym_OutpaymentsContentsByIndex(myNymID, 0);
-
-	cout << "Last out-payment for nym: " << opentxs::OTAPI_Wrap::GetNym_Name(myNymID) << endl;
-	cout << zkr::cc::fore::lightblue << outPaymentMy << endl;
-	cout << zkr::cc::console << endl;
+	else cout << zkr::cc::fore::lightgreen << "Operation successfull" << zkr::cc::console << endl; // all okS
 
 	return true;
 }
