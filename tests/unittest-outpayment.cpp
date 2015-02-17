@@ -49,7 +49,7 @@ TEST_F(cUseOtOutpaymentTest, cmdShowFail) {
 	EXPECT_ANY_THROW(parser->StartProcessing(cmd, useOt).UseExecute());
 
 }
-
+/*
 TEST_F(cUseOtOutpaymentTest, removeAllCmd) {
 	shared_ptr<nOT::nNewcli::cCmdParser> parser(new nOT::nNewcli::cCmdParser);
 	parser->Init();
@@ -57,7 +57,7 @@ TEST_F(cUseOtOutpaymentTest, removeAllCmd) {
 
 	const string cmdOk = preCmd + "rm \"" + nym1 + "\" --all --dryrun";
 	parser->StartProcessing(cmdOk, useOt).UseExecute() ;
-}
+}*/
 /*
 TEST_F(cUseOtOutpaymentTest, removeAll) {
 

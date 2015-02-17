@@ -61,12 +61,13 @@ TEST_F(cUseOtChequeTest, DepositCheque) {
 	const auto fromNymBalance = opentxs::OTAPI_Wrap::GetAccountWallet_Balance(useOt->AccountGetId(fromAcc));
 
 	ASSERT_TRUE(useOt->PaymentAccept(toAcc, -1, false));
+//	ASSERT_TRUE(useOt->PaymentAccept(toAcc, -1, false));
 
-//	sleep(5);
-//	useOt->NymRefresh(toNym, true, false);
-//	useOt->AccountRefresh(toAcc, true, false);
+	sleep(15);
+	useOt->NymRefresh(toNym, true, false);
+	useOt->AccountRefresh(toAcc, true, false);
 
-	sleep(5);
+	sleep(15);
 	EXPECT_EQ(toNymBalance + amount, opentxs::OTAPI_Wrap::GetAccountWallet_Balance(useOt->AccountGetId(toAcc)));
 	EXPECT_EQ(fromNymBalance - amount, opentxs::OTAPI_Wrap::GetAccountWallet_Balance(useOt->AccountGetId(fromAcc)));
 

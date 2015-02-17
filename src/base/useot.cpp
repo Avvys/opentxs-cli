@@ -182,7 +182,7 @@ bool cUseOT::Refresh(bool dryrun) {
 	bool StatusAccountRefresh = AccountRefresh(AccountGetName(AccountGetDefault()), true, false);
 	bool StatusNymRefresh = NymRefresh("^" + NymGetDefault(), true, false);
 	if (StatusAccountRefresh == true && StatusNymRefresh == true) {
-		_info("Succesfull refresh");
+		// _info("Succesfull refresh");
 		return true;
 	} else if (StatusAccountRefresh == true && StatusNymRefresh == false) {
 		_dbg1("Can not refresh Nym");
@@ -348,14 +348,14 @@ bool cUseOT::AccountRefresh(const string & accountName, bool all, bool dryrun) {
 			ID accountServerID = opentxs::OTAPI_Wrap::GetAccountWallet_ServerID(accountID);
 			ID accountNymID = opentxs::OTAPI_Wrap::GetAccountWallet_NymID(accountID);
 			if ( mMadeEasy->retrieve_account(accountServerID, accountNymID, accountID, false) ) { // forcing download
-				_info("Account " + AccountGetName(accountID) + "(" + accountID +  ")" + " retrieval success from server " + ServerGetName(accountServerID) + "(" + accountServerID +  ")");
+//				_info("Account " + AccountGetName(accountID) + "(" + accountID +  ")" + " retrieval success from server " + ServerGetName(accountServerID) + "(" + accountServerID +  ")");
 				++accountsRetrieved;
 			}else
 				_erro("Account " + AccountGetName(accountID) + "(" + accountID +  ")" + " retrieval failure from server " + ServerGetName(accountServerID) + "(" + accountServerID +  ")");
 		}
         string count = ToStr(accountsRetrieved) + "/" + ToStr(accountCount);
 		if (accountsRetrieved == accountCount) {
-			_info("All accounts were successfully retrieved " << count);
+//			_info("All accounts were successfully retrieved " << count);
 			return true;
 		} else if (accountsRetrieved == 0) {
 			_erro("Accounts retrieval failure " << count);
@@ -2044,9 +2044,11 @@ bool cUseOT::PaymentAccept(const string & account, int64_t index, bool dryrun) {
 	if (nCount < 0)
 		return handleError("Unable to retrieve size of payments inbox ledger. (Failure.)\n");
 
-	if (index == -1)
+	if (index == -1) {
 		index = nCount - 1;
-	_info("index = " << index << "nCount = " << nCount);
+		_mark("index= " << index);
+	}
+	_info("index = " << index << "; nCount = " << nCount);
 /*
 	int32_t nIndicesCount = VerifyStringVal(strIndices) ? opentxs::OTAPI_Wrap::NumList_Count(strIndices) : 0;
 
@@ -2175,6 +2177,7 @@ bool cUseOT::PaymentAccept(const string & account, int64_t index, bool dryrun) {
 
 		auto deposit = opentxs::OTAPI_Wrap::depositCheque(accountServerID, accountNymID, accountID, instrument);
 		cout << deposit << endl;
+		_mark(deposit);
 		if (deposit < 0)
 			return false;
 

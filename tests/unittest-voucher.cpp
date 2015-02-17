@@ -12,6 +12,7 @@ class cUseOtVoucherTest: public testing::Test {
 protected:
 	std::shared_ptr<nOT::nUse::cUseOT> useOt;
 	std::string nym1;
+	std::string acc1;
 	std::string toNym;
 	std::string toAcc;
 	std::string fromAcc;
@@ -21,12 +22,15 @@ protected:
 
 	virtual void SetUp() {
 		nym1 = "Trader Bob";
+		acc1 = "Bob's Silver";
 
 		toNym = "FT's Test Nym";
 		toAcc = "FT's Tokens";
 
 		fromNym = "Trader Bob";
 		fromAcc = "Bob's Tokens";
+
+
 
 		amount = 3;
 		amount2 = 5;
@@ -44,28 +48,27 @@ protected:
 TEST_F(cUseOtVoucherTest, VoucherCreate) {
 	EXPECT_FALSE(useOt->VoucherWithdraw("bitcoins", toNym, -20, "some memo", 0));
 
-	auto fromAccID = useOt->AccountGetId(fromAcc);
-	const auto balance = opentxs::OTAPI_Wrap::GetAccountWallet_Balance(fromAccID);
+	const auto balance = opentxs::OTAPI_Wrap::GetAccountWallet_Balance(useOt->AccountGetId(acc1));
 
-	EXPECT_FALSE(useOt->VoucherWithdraw(fromAcc, toNym, balance + 1, "memo", false));
+	EXPECT_FALSE(useOt->VoucherWithdraw(acc1, toNym, balance + 1, "memo", false));
 
 	sleep(3);
-	EXPECT_TRUE(useOt->VoucherWithdraw(fromAcc, toNym, amount, "memo", false));
-	EXPECT_TRUE(useOt->OutpaymentShow(fromNym, 0, false));
+	EXPECT_TRUE(useOt->VoucherWithdraw(acc1, toNym, amount, "memo", false));
+	EXPECT_TRUE(useOt->OutpaymentShow(nym1, 0, false));
 
 	sleep(10);
-	EXPECT_EQ(balance - amount, opentxs::OTAPI_Wrap::GetAccountWallet_Balance(fromAccID));
+	EXPECT_EQ(balance - amount, opentxs::OTAPI_Wrap::GetAccountWallet_Balance(useOt->AccountGetId(acc1)));
 }
 
 TEST_F(cUseOtVoucherTest, VoucherCancel) {
-	auto accID = useOt->AccountGetId(fromAcc);
+	auto accID = useOt->AccountGetId(acc1);
 	auto currentBallance = opentxs::OTAPI_Wrap::GetAccountWallet_Balance(accID);
 
-	ASSERT_TRUE(useOt->VoucherCancel(fromAcc, fromNym, 0, false));
-	EXPECT_TRUE(useOt->AccountInAccept(fromAcc, 0, false, false));
+	ASSERT_TRUE(useOt->VoucherCancel(acc1, nym1, 0, false));
+	EXPECT_TRUE(useOt->AccountInAccept(acc1, 0, false, false));
 
-	useOt->NymRefresh(fromNym, true, false);
-	useOt->AccountRefresh(fromAcc, true, false);
+	useOt->NymRefresh(acc1, true, false);
+	useOt->AccountRefresh(acc1, true, false);
 	EXPECT_EQ(currentBallance + amount, opentxs::OTAPI_Wrap::GetAccountWallet_Balance(accID));
 }
 
