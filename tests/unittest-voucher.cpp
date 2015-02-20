@@ -125,3 +125,30 @@ TEST_F(cUseOtVoucherTest, test) {
 
 }
 
+TEST_F(cUseOtVoucherTest, test2) {
+	useOt->Init();
+
+	string accID = "";
+	string nymID = "";
+	string srvID = "";
+	string filename = "/tmp/OT-VOUCHER";
+	string instrument;
+
+
+	nOT::nUtils::cEnvUtils envUtils;
+
+	if(!filename.empty()) {
+			_dbg3("Loading from file: " << filename);
+			instrument = envUtils.ReadFromFile(filename);
+			_dbg3("Loaded: " << instrument);
+		}
+
+		if ( instrument.empty()) instrument = envUtils.Compose();
+		if( instrument.empty() ) {
+			_warn("Can't import, empty input");
+		}
+
+
+	auto dep = opentxs::OTAPI_Wrap::depositCheque(srvID, nymID, accID, instrument);
+}
+
