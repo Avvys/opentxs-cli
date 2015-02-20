@@ -107,3 +107,21 @@ TEST_F(cUseOtVoucherTest, OutpaymentRemove) {
 
 	useOt->OutpaymentDisplay(nym1, false);
 }
+
+TEST_F(cUseOtVoucherTest, test) {
+//	 	bool VoucherWithdraw(const ID & fromAccID, const ID & fromNymID, const ID & toNymID, const ID & assetID, const ID & srvID, int64_t amount,
+//	string memo, bool send);
+	useOt->Init();
+
+	auto fromAccID = useOt->AccountGetId("");
+	auto fromNymID = useOt->NymGetId("");
+	auto toNymID = "";
+	auto assetID = useOt->AssetGetId("Bitcoins");
+	auto srvID = useOt->ServerGetId("Transactions.com");
+	int64_t amount = 100;
+
+	auto result = useOt->VoucherWithdraw(fromAccID, fromNymID, toNymID, assetID, srvID, amount, "test", true);
+
+
+}
+

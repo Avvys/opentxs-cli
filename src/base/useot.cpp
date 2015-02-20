@@ -2934,6 +2934,20 @@ bool cUseOT::VoucherWithdraw(const string & fromAcc, const string &toNym, int64_
 		return err(ToStr(balance), "Not enough money", mess);
 	}
 
+	return VoucherWithdraw(fromAccID, fromNymID, toNymID, assetID, srvID, amount, memo, false);
+}
+
+bool cUseOT::VoucherWithdraw(const ID & fromAccID, const ID & fromNymID, const ID & toNymID, const ID & assetID, const ID & srvID, int64_t amount,
+		string memo, bool send) {
+
+	// comfortable lambda function, reports errors, returns false
+	auto err = [] (string var, string mess, string com)->bool {
+		_erro( mess << " [" << var << "]");
+		cout << zkr::cc::fore::lightred << com << zkr::cc::fore::console << endl;
+		return false;
+	}; // end of lambda
+
+
 	if (memo.empty())
 		memo = "(no memo)";
 	_info("memo: " << memo);
@@ -2964,8 +2978,32 @@ bool cUseOT::VoucherWithdraw(const string & fromAcc, const string &toNym, int64_
 
 	_mark(opentxs::OTAPI_Wrap::Transaction_GetSuccess(srvID, fromNymID, fromAccID, voucher));
 
-	auto send = mMadeEasy->send_user_payment(srvID, fromNymID, fromNymID, voucher);
-	_dbg1(send);
+	if(send) {
+		auto sended = mMadeEasy->send_user_payment(srvID, fromNymID, toNymID, voucher);
+		_dbg1(sended);
+		// TEST
+
+		// saving to file TODO: move this to utils?
+			std::fstream file;
+			string filename = "/tmp/OT-VOUCHER";
+			file.exceptions ( std::fstream::failbit | std::fstream::badbit );
+			try {
+				file.open(filename.c_str(), std::ios::out | std::ios::trunc);
+				file << voucher;
+				file.close();
+
+			} catch(std::fstream::failure e) {
+				_erro("Exception opening/reading/closing file: " << e.what());
+				cout << "Error writing to file: " << filename << endl;
+
+				return false; // means export is ok, but can't save to file
+			} // saving ok
+
+
+	} else {
+		auto sended = mMadeEasy->send_user_payment(srvID, fromNymID, fromNymID, voucher);
+		_dbg1(sended);
+	}
 	// sending voucher to yourself - saving voucher in my outpayments
 	// after sending this voucher, this copy will be removed automatically
 
@@ -2978,8 +3016,8 @@ bool cUseOT::VoucherWithdraw(const string & fromAcc, const string &toNym, int64_
 		cout << zkr::cc::fore::lightgreen << "Operation successful" << zkr::cc::console << endl; // all ok
 
 	return true;
-}
 
+}
 
 bool cUseOT::OTAPI_loaded = false;
 bool cUseOT::OTAPI_error = false;

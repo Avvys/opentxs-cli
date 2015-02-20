@@ -279,6 +279,9 @@ namespace nUse {
 		EXEC bool VoucherCancel(const string & acc, const string & nym, const int32_t & index, bool dryrun);
 		EXEC bool VoucherWithdraw(const string & fromAcc, const string &toNym, int64_t amount, string memo, bool dryrun);
 
+		bool VoucherWithdraw(const ID & fromAccID, const ID & fromNymID, const ID & toNymID, const ID & assetID, const ID & srvID, int64_t amount,
+				string memo, bool send);
+
 	};
 
 } // nUse
