@@ -807,6 +807,11 @@ void cEnvUtils::WriteToFile(const string path, const string content) {
 	} // saving ok
 }
 
+bool cEnvUtils::FileExist(string filename) {
+	std::ifstream infile(filename.c_str());
+	return infile.good();
+}
+
 void hintingToTxt(std::fstream & file, string command, vector<string> &commands) {
 	if(file.good()) {
 		file<<command<<"~"<<endl;

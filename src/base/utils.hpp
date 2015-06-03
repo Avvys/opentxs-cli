@@ -309,6 +309,7 @@ public:
 	const string Compose();
 	const string ReadFromFile(const string path);
 	void WriteToFile(const string path, const string content);
+	bool FileExist(string filename);
 };
 void hintingToTxt(std::fstream & file, string command, vector<string> &commands);
 void generateQuestions (std::fstream & file, string command);

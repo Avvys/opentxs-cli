@@ -105,10 +105,20 @@ bool cUseOT::PrintInstrumentInfo(const string &instrument) {
 
 
 void cUseOT::LoadDefaults() {
-	// TODO What if there is, for example no accounts?
 	// TODO Check if defaults are correct.
+	nUtils::cEnvUtils envUtils;
+	if (!envUtils.FileExist(mDefaultIDsFile)) {
+		string skeleton = "Account\nAsset\nUser\nServer";
+		_dbg3("With content: " << skeleton);
+
+		envUtils.WriteToFile(mDefaultIDsFile, skeleton);
+		if(!envUtils.FileExist(mDefaultIDsFile))
+			throw "Can't create " + mDefaultIDsFile;
+	}
+
 	if ( !configManager.Load(mDefaultIDsFile, mDefaultIDs) ) {
-		_warn("Cannot open " + mDefaultIDsFile + " file, setting IDs with ID 0 as default"); //TODO check if there is any nym in wallet
+		_warn("Cannot open " + mDefaultIDsFile + " file, setting IDs with ID 0 as default");
+
 		ID accountID = opentxs::OTAPI_Wrap::GetAccountWallet_ID(0);
         ID assetID = opentxs::OTAPI_Wrap::GetAssetType_ID(0);
         ID NymID = opentxs::OTAPI_Wrap::GetNym_ID(0);
@@ -321,14 +331,14 @@ string cUseOT::AccountGetDefault() {
 }
 
 ID cUseOT::AccountGetId(const string & accountName) {
-	if(!Init())
+	if (!Init())
 		return "";
-	if ( nUtils::checkPrefix(accountName) )
+	if (nUtils::checkPrefix(accountName))
 		return accountName.substr(1);
 	else {
-		for(int i = 0 ; i < opentxs::OTAPI_Wrap::GetAccountCount ();i++) {
-			if(opentxs::OTAPI_Wrap::GetAccountWallet_Name ( opentxs::OTAPI_Wrap::GetAccountWallet_ID (i))==accountName)
-			return opentxs::OTAPI_Wrap::GetAccountWallet_ID (i);
+		for (int i = 0; i < opentxs::OTAPI_Wrap::GetAccountCount(); i++) {
+			if (opentxs::OTAPI_Wrap::GetAccountWallet_Name(opentxs::OTAPI_Wrap::GetAccountWallet_ID(i)) == accountName)
+				return opentxs::OTAPI_Wrap::GetAccountWallet_ID(i);
 		}
 	}
 	return "";

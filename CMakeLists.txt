@@ -32,7 +32,7 @@ option(RPM                 "Build a RPM" OFF)
 option(DEB                 "Build a DEB" OFF)
 option(LOCAL		       "Search libraries and install in $HOME/.local" ON)
 option(WITH_TERMCOLORS     "Build with support for unix terminal console colors VT100" ON)
-option(LOCAL_EDITLINE      "Use local Editline library ($HOME/.local)" ON) # Always ON because of bugs in Debian libedit package!
+option(LOCAL_EDITLINE      "Use local Editline library ($HOME/.local)" OFF) # Always ON because of bugs in Debian libedit package!
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/") # Add folder with cmake modules
 
