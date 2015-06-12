@@ -8,6 +8,9 @@
 
 #include "../src/base/addressbook.hpp"
 
+#include <ctime>
+#include <cstdlib>
+
 using namespace nOT::nUtils;
 using namespace nOT;
 
@@ -183,3 +186,30 @@ TEST_F(cUseOtAddressBookTest, NymNameExist) {
 	EXPECT_FALSE(useOt->NymNameExist(toAdd.second));
 
 }
+
+TEST_F(cUseOtAddressBookTest, ExportImport) {
+	srand(time(NULL));
+	const string exampleNym = "alice_";
+	const string exampleNymID = "otxNhHReyvasXyD9rLnRFpp6SYPXBJ5R9oS7";
+	const string filename = "export_" + exampleNym + "_" + std::to_string(rand()%999+1000) ;
+	const string filename_wrong = "export_" + exampleNym + "_" + std::to_string(rand()%999+1000) + "_wrong" ;
+
+	_mark("exporting to: " << filename);
+	auto addressbook = nOT::AddressBookStorage::Get(nymID);
+	ASSERT_TRUE(addressbook->nymExport(exampleNym, exampleNymID, filename));
+
+	ASSERT_TRUE(opentxs::OTPaths::PathExists(opentxs::String(filename)));
+	ASSERT_TRUE(addressbook->nymImport(filename));
+
+	ASSERT_TRUE(addressbook->nymExist(exampleNymID));
+
+	ASSERT_TRUE(addressbook->remove(exampleNymID));
+
+	ASSERT_FALSE(addressbook->nymImport(filename_wrong));
+	ASSERT_TRUE(addressbook->nymExport(exampleNym, "wrong id", filename_wrong));
+
+	ASSERT_FALSE(addressbook->nymImport(filename_wrong));
+
+}
+
+

@@ -17,6 +17,9 @@ public:
 	string nymGetID(const string & nymName) const; ///< get nyn exist
 	bool nymNameExist(const string & nymName) const; ///< check nym exists (by name)
 	string nymGetName(const string & id) const; ///< get nym name
+	bool nymExport(const string & nymName, const string &nymID, const string & filename);
+	bool nymImport(const string & filename);
+
 
 	bool remove(const string & nymID); ///< removes nym
 	void removeAll(); ///< removes all nyms from address book

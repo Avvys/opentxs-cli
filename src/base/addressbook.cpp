@@ -172,6 +172,40 @@ void AddressBook::saveContacts() {
 	saveContacts(this->contacts);
 }
 
+bool AddressBook::nymExport(const string & nymName, const string &nymID, const string & filename) {
+	cEnvUtils ioUtils;
+	string toSave = nymName + " " + nymID;
+
+	try {
+		ioUtils.WriteToFile(filename, toSave);
+
+		return true;
+	} catch(...) {
+		return false;
+	}
+
+}
+bool AddressBook::nymImport(const string & filename) {
+	cEnvUtils ioUtils;
+
+	string line = ioUtils.ReadFromFile(filename);
+	if(line.empty()) return false;
+
+	auto pos = line.find(" ");
+
+	string nymName = line.substr(0, pos);
+	_note(nymName);
+	string nymID = line.substr(pos + 1);
+	_note(nymID);
+
+
+	_dbg3(nymID.substr(0,3) << ", " << nymID.size());
+	if (nymID.substr(0, 3) != "otx" || nymID.size() != 36)
+		return nUtils::reportError("invalid nym id: " + nymName + "(" + nymID + ")");
+
+	return add(nymName, nymID);
+}
+
 vector<string> AddressBook::getAllNames() {
 	vector<string> nyms;
 	nyms.reserve(contacts.size());
