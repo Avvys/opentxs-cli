@@ -577,6 +577,9 @@ void cCmdParser::Init() {
 	AddFormat("addressbook export", {pNym, pNymTo, pWriteFile}, {}, NullMap,
 		LAMBDA { auto &D=*d; return U.AddressBookExport(D.V(1), D.V(2), D.V(3), D.has("--dryrun") ); } );
 
+	AddFormat("addressbook export-my", {pWriteFile}, {}, NullMap,
+		LAMBDA { auto &D=*d; return U.AddressBookExport(U.NymGetName(U.NymGetDefault()), U.NymGetName(U.NymGetDefault()), D.V(1), D.has("--dryrun") ); } );
+
 	//======== ot asset ========
 
 	AddFormat("asset", {}, {}, NullMap,
