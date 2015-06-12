@@ -141,7 +141,8 @@ namespace nUse {
 		EXEC bool AddressBookAdd(const string & nym, const string & newNym, const ID & newNymID, bool dryrun); ///< adds new nym to adress book, TODO: some validation of new nym ID
 		EXEC bool AddressBookDisplay(const string & nym, bool dryrun); ///< displaying address book for specific nym
 		EXEC bool AddressBookRemove(const string & ownerNym, const ID & toRemoveNymID, bool dryrun); ///< removes entry from address book by nym ID
-
+		EXEC bool AddressBookImport(const string & ownerNym, const string & filename, bool dryrun);
+		EXEC bool AddressBookExport(const string & ownerNym, const string & exportNym, const string & filename, bool dryrun);
 
 		//================= asset =================
 

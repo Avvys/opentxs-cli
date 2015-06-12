@@ -571,6 +571,12 @@ void cCmdParser::Init() {
 	AddFormat("addressbook rm", {pNym, pId}, {}, NullMap,
 		LAMBDA { auto &D=*d; return U.AddressBookRemove(D.V(1), D.V(2), D.has("--dryrun") ); } );
 
+	AddFormat("addressbook import", {pNym, pReadFile}, {}, NullMap,
+		LAMBDA { auto &D=*d; return U.AddressBookImport(D.V(1), D.V(2), D.has("--dryrun") ); } );
+
+	AddFormat("addressbook import", {pNym, pNymTo, pWriteFile}, {}, NullMap,
+		LAMBDA { auto &D=*d; return U.AddressBookExport(D.V(1), D.V(2), D.V(3), D.has("--dryrun") ); } );
+
 	//======== ot asset ========
 
 	AddFormat("asset", {}, {}, NullMap,

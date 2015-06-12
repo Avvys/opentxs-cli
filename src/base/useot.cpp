@@ -880,6 +880,27 @@ bool cUseOT::AddressBookRemove(const string & ownerNym, const ID & toRemoveNymID
 	return removed;
 }
 
+EXEC bool cUseOT::AddressBookImport(const string & ownerNym, const string & filename, bool dryrun) {
+	_fact("addressbook import " << ownerNym << " " << filename);
+	if(dryrun) return true;
+	if(!Init()) return false;
+
+	auto addressbook = AddressBookStorage::Get(NymGetId(ownerNym));
+
+	return addressbook->nymImport(filename);
+}
+
+EXEC bool cUseOT::AddressBookExport(const string & ownerNym, const string & exportNym, const string & filename, bool dryrun) {
+	_fact("addressbook export " << ownerNym << " " << exportNym << " " << filename);
+	if(dryrun) return true;
+	if(!Init()) return false;
+
+	auto addressbook = AddressBookStorage::Get(NymGetId(ownerNym));
+
+	const ID exportNymID = NymGetToNymId(exportNym, NymGetId(ownerNym));
+	return  addressbook->nymExport(exportNym, exportNymID, filename);
+}
+
 vector<string> cUseOT::AssetGetAllNames() {
 	if(!Init())
 	return vector<string> {};

@@ -536,7 +536,7 @@ void cInteractiveShell::CompleteOnceWithDaemon(const string & line) {
 
 			} // untill finish
 			_mark("DONE reading commands as daemon.");
-		}
+		} // TODO: resourceLeak;Resource leak: pipe_file
 	}
 #endif
 }
